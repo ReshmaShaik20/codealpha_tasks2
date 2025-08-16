@@ -1,0 +1,56 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ view_user.username }}'s Profile{% endblock %}
+
+{% block content %}
+    <h1>{{ view_user.username }}'s Profile</h1>
+
+    {% if user.is_authenticated and user != view_user %}
+        <div class="follow-actions">
+            {% if is_following %}
+                <form method="post" action="{% url 'unfollow_user' view_user.username %}">
+                    {% csrf_token %}
+                    <button type="submit">Unfollow</button>
+                </form>
+            {% else %}
+                <form method="post" action="{% url 'follow_user' view_user.username %}">
+                    {% csrf_token %}
+                    <button type="submit">Follow</button>
+                </form>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <div class="profile-stats">
+        <p><strong>Followers:</strong> {{ view_user.followers.count }}</p>
+        <p><strong>Following:</strong> {{ view_user.following.count }}</p>
+    </div>
+
+    <h2>{{ view_user.username }}'s Posts:</h2>
+    {% if posts %}
+        <div class="posts-list">
+            {% for post in posts %}
+                <div class="post-card">
+                    <p>{{ post.content }}</p>
+                    <small>{{ post.created_at|date:"M d, Y H:i" }}</small>
+                    <div class="post-actions">
+                        <a href="{% url 'post_detail' post.id %}">View Post</a>
+                        {% if user in post.likes.all %}
+                            <form method="post" action="{% url 'unlike_post' post.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit">Unlike ({{ post.like_set.count }})</button>
+                            </form>
+                        {% else %}
+                            <form method="post" action="{% url 'like_post' post.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit">Like ({{ post.like_set.count }})</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>{{ view_user.username }} hasn't posted anything yet.</p>
+    {% endif %}
+{% endblock %}
