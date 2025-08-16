@@ -1,0 +1,23 @@
+# MySocialApp/.gitignore
+
+# Python interpreter and virtual environment
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+env/
+venv/
+.venv/ # Some virtual environments use .venv
+*.egg-info/
+.pytest_cache/
+
+# Django-specific
+media/          # User-uploaded files (if you implement file uploads later)
+db.sqlite3      # Your local SQLite database file (contains data, not code)
+local_settings.py # If you add a local settings file for secrets
+*.log           # Log files
+staticfiles/    # If you use collectstatic locally
+
+# Operating System Files
+.DS_Store       # macOS specific files
+Thumbs.db       # Windows thumbnail cache
