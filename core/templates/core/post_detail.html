@@ -1,0 +1,51 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Post by {{ post.user.username }}{% endblock %}
+
+{% block content %}
+    <div class="post-card full-post">
+        <h2>Post by <a href="{% url 'profile' post.user.username %}">{{ post.user.username }}</a></h2>
+        <p>{{ post.content }}</p>
+        <small>{{ post.created_at|date:"M d, Y H:i" }}</small>
+        <div class="post-actions">
+            {% if user in post.likes.all %}
+                <form method="post" action="{% url 'unlike_post' post.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Unlike ({{ post.like_set.count }})</button>
+                </form>
+            {% else %}
+                <form method="post" action="{% url 'like_post' post.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Like ({{ post.like_set.count }})</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="comments-section">
+        <h3>Comments ({{ post.comment_set.count }}):</h3>
+        {% if post.comment_set.all %}
+            {% for comment in post.comment_set.all %}
+                <div class="comment-card">
+                    <p><strong><a href="{% url 'profile' comment.user.username %}">{{ comment.user.username }}</a>:</strong> {{ comment.content }}</p>
+                    <small>{{ comment.created_at|date:"M d, Y H:i" }}</small>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No comments yet. Be the first!</p>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+            <div class="comment-form">
+                <h4>Add a Comment:</h4>
+                <form method="post" action="{% url 'add_comment' post.id %}">
+                    {% csrf_token %}
+                    <textarea name="content" placeholder="Write your comment here..." required></textarea>
+                    <button type="submit">Add Comment</button>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+
+    <p><a href="{% url 'home' %}">Back to Home</a></p>
+{% endblock %}
